@@ -37,7 +37,7 @@ const App = () => {
       <input
         type="text"
         value={text}
-        onChange={onChangeText} // 状態を更新
+        onChange={onChangeText} // 状態更新
         placeholder="テキストを入力"
       />
       学習時間：
@@ -45,7 +45,7 @@ const App = () => {
         type="number"
         min="0"
         value={time}
-        onChange={onChangeTime} // 状態を更新
+        onChange={onChangeTime} // 状態更新
         placeholder="0"
       />
       <button type="submit" onClick={onClickAdd}>登録</button>
