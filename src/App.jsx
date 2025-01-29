@@ -1,6 +1,5 @@
 import "./App.css";
 import { useState } from "react";
-import RecordsList from "./components/RecordsList";
 
 //全体
 
