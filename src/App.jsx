@@ -1,3 +1,4 @@
+
 import "./App.css";
 import { supabase } from "./supabaseClient.js";
 import { useState, useEffect } from "react";
@@ -11,8 +12,6 @@ const App = () => {
   const [loading, setLoading] =useState(true);
 
   const total = records.reduce((acc, record) => acc + Number(record.time), 0);
-
-  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const { data, error } = await supabase.from("study-record").select("*");
@@ -20,17 +19,18 @@ const App = () => {
         setLoading(false);
         return;
       }
-      if (data) { setRecords(data); }
+      setRecords(data);
       setLoading(false);
     };
 
+  useEffect(() => {
     fetchData();
   }, []); // 👈 依存配列を空にする
-
+    
   const onChangeText = (event) => setText(event.target.value);
   const onChangeTime = (event) => setTime(parseInt(event.target.value, 10) || 0);
 
-  const onClickAdd = () => {
+  const onClickAdd = async () => {
     if (text === "") {
       setError("学習内容を入力してください");
       return;
@@ -39,13 +39,31 @@ const App = () => {
       setError("学習時間を1以上にしてください");
       return;
     }
-
-    const newRecords = [...records, { text, time }];
-    setRecords(newRecords);
+    setError(""); // エラーリセット
+    
+  // Supabase にデータを追加
+    const { error } = await supabase.from("study-record").insert([{ text, time }]);
+    if (error) {
+      console.error("データ追加エラー:", error);
+      return;
+    }
+  
+    // 最新データを取得
+    await fetchData();
     setText("");
-    setTime(0); // 数値としてセット
-    setError("");
+    setTime(0); 
   };
+  
+    // データを削除
+  const deleteData = async (id) => {
+    const {error} = await supabase
+    .from('study-record').delete().eq('id', id);
+    if (error) {
+      console.error("データ削除エラー:", error);
+      return;
+    }
+  await fetchData(); // 削除後にデータを更新
+    };
 
   return (
     <>
@@ -76,7 +94,11 @@ const App = () => {
           <ul>
             {records.length > 0 ? (
               records.map((record) => (
-                <li key={record.id}>内容: {record.text} 時間: {record.time}</li>
+                <li key={record.id}>
+                  内容: {record.text} 
+                  時間: {record.time}
+                  <span onClick={() => deleteData(record.id)}>✖️</span>
+                </li>
               ))
             ) : (
               <li>データがありません</li>
