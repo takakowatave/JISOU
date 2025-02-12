@@ -68,7 +68,7 @@ const App = () => {
   return (
     <>
       <div>
-        <h1>学習記録</h1>
+        <h1>渡部貴子の学習記録</h1>
         学習内容：
         <input
           type="text"
